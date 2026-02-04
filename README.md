@@ -2,6 +2,10 @@
 
 Java client for the [Sec4Dev Security Checks API](https://api.sec4.dev): disposable email detection and IP classification.
 
+## Documentation
+
+Full API documentation: [https://docs.sec4.dev/](https://docs.sec4.dev/)
+
 ## Install
 
 Add to your `pom.xml`:
@@ -53,11 +57,13 @@ try {
 }
 ```
 
-## Builder options
+## Options
+
+Builder options:
 
 - `apiKey(String)` — API key (required, must start with `sec4_`)
 - `baseUrl(String)` — API base URL (default: `https://api.sec4.dev/api/v1`)
-- `timeout(long, TimeUnit)` — Request timeout
+- `timeout(long, TimeUnit)` — Request timeout (default: 30s)
 - `retries(int)` — Retry attempts (default: 3)
 - `retryDelay(long)` — Base retry delay in ms (default: 1000)
 - `onRateLimit(RateLimitCallback)` — Callback for rate limit updates
