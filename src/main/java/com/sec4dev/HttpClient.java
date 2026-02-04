@@ -17,22 +17,24 @@ final class HttpClient {
 
     private static final String SDK_VERSION = "1.0.0";
     private static final Duration CONNECT_TIMEOUT = Duration.ofSeconds(10);
-    private static final Duration READ_TIMEOUT = Duration.ofSeconds(30);
+    private static final Duration DEFAULT_READ_TIMEOUT = Duration.ofSeconds(30);
 
     private final String baseUrl;
     private final String apiKey;
     private final java.net.http.HttpClient client;
     private final int retries;
     private final long retryDelayMs;
+    private final Duration readTimeout;
     private final ObjectMapper mapper = new ObjectMapper();
 
     HttpClient(String baseUrl, String apiKey, java.net.http.HttpClient client,
-               int retries, long retryDelayMs) {
+               int retries, long retryDelayMs, Duration readTimeout) {
         this.baseUrl = baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length() - 1) : baseUrl;
         this.apiKey = apiKey;
         this.client = client != null ? client : defaultClient();
         this.retries = retries;
         this.retryDelayMs = retryDelayMs;
+        this.readTimeout = readTimeout != null && !readTimeout.isZero() ? readTimeout : DEFAULT_READ_TIMEOUT;
     }
 
     private static java.net.http.HttpClient defaultClient() {
@@ -122,7 +124,7 @@ final class HttpClient {
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json")
                 .header("User-Agent", "sec4dev-java/" + SDK_VERSION)
-                .timeout(READ_TIMEOUT)
+                .timeout(readTimeout)
                 .POST(HttpRequest.BodyPublishers.ofString(bodyJson));
 
         Sec4DevException lastException = null;

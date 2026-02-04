@@ -3,6 +3,7 @@ package com.sec4dev;
 import com.sec4dev.models.RateLimitInfo;
 
 import java.net.http.HttpClient;
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -30,15 +31,17 @@ public final class Sec4DevClient {
         HttpClient javaClient = null;
         if (b.timeoutMs > 0) {
             javaClient = HttpClient.newBuilder()
-                    .connectTimeout(java.time.Duration.ofSeconds(10))
+                    .connectTimeout(Duration.ofSeconds(10))
                     .build();
         }
+        Duration readTimeout = b.timeoutMs > 0 ? Duration.ofMillis(b.timeoutMs) : null;
         this.http = new com.sec4dev.HttpClient(
                 baseUrl,
                 key,
                 javaClient,
                 b.retries >= 0 ? b.retries : DEFAULT_RETRIES,
-                b.retryDelayMs >= 0 ? b.retryDelayMs : DEFAULT_RETRY_DELAY_MS
+                b.retryDelayMs >= 0 ? b.retryDelayMs : DEFAULT_RETRY_DELAY_MS,
+                readTimeout
         );
         com.sec4dev.HttpClient.RateLimitCallback cb = info -> {
             this.rateLimit = info;
